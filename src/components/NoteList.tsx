@@ -5,6 +5,7 @@ import ReactSelect from "react-select";
 
 import { Tag } from "../App";
 import NoteCard from "./NoteCard";
+import EditTagsModal from "./EditTagsModal";
 
 export type SimplifiedNote = {
   tags: Tag[];
@@ -15,21 +16,29 @@ export type SimplifiedNote = {
 type NoteListProps = {
   avaliableTags: Tag[];
   notes: SimplifiedNote[];
+  onDeleteTag: (id: string) => void;
+  onUpdateTag: (id: string, label: string) => void;
 };
 
-const NoteList = ({ avaliableTags, notes }: NoteListProps) => {
+const NoteList = ({
+  avaliableTags,
+  notes,
+  onDeleteTag,
+  onUpdateTag,
+}: NoteListProps) => {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
+  const [editTagsModalIsOpen, setEditTagsModalIsOpen] = useState(false);
 
   const filteredNotes = useMemo(() => {
     return notes.filter((note) => {
       return (
-        ((title === "" ||
+        (title === "" ||
           note.title.toLowerCase().includes(title.toLowerCase())) &&
-          selectedTags.length === 0) ||
-        selectedTags.every((tag) =>
-          note.tags.some((noteTag) => noteTag.id === tag.id)
-        )
+        (selectedTags.length === 0 ||
+          selectedTags.every((tag) =>
+            note.tags.some((noteTag) => noteTag.id === tag.id)
+          ))
       );
     });
   }, [title, selectedTags, notes]);
@@ -45,7 +54,12 @@ const NoteList = ({ avaliableTags, notes }: NoteListProps) => {
             <Link to="/new">
               <Button variant="primary">Create</Button>
             </Link>
-            <Button variant="outline-secondary">Edit Tags</Button>
+            <Button
+              onClick={() => setEditTagsModalIsOpen(true)}
+              variant="outline-secondary"
+            >
+              Edit Tags
+            </Button>
           </Stack>
         </Col>
       </Row>
@@ -91,6 +105,13 @@ const NoteList = ({ avaliableTags, notes }: NoteListProps) => {
           </Col>
         ))}
       </Row>
+      <EditTagsModal
+        avaliableTags={avaliableTags}
+        show={editTagsModalIsOpen}
+        handleClose={() => setEditTagsModalIsOpen(false)}
+        onDeleteTag={onDeleteTag}
+        onUpdateTag={onUpdateTag}
+      />
     </>
   );
 };
