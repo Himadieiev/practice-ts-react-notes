@@ -6,10 +6,8 @@ import App from "./App.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/practice-ts-react-notes">
       <App />
     </BrowserRouter>
   </React.StrictMode>
 );
-
-//  basename = "/practice-ts-react-notes";
